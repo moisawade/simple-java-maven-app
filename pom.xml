@@ -18,8 +18,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <sonar.host.url>http://10.200.0.182:9000</sonar.host.url>
-    <sonar.token>${env.sonarqube-token}</sonar.tokken>
-    <!-- <sonar.login>${env.sonarqube-token}</sonar.login> -->
+    <sonar.login>${env.sonarqube-token}</sonar.login>
     <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
     <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
     <sonar.jacoco.reportPath>${project.basedir}/target/jacoco.exec</sonar.jacoco.reportPath>
