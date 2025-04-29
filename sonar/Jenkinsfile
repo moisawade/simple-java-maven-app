@@ -3,10 +3,10 @@ pipeline {
         label 'builder'
     }
     
-    // tools {
-    //     maven 'Maven'
-    //     jdk 'JDK11'
-    // }
+    tools {
+        maven 'Maven'
+    //    jdk 'JDK11'
+    }
     
     stages {
         stage('Checkout') {
