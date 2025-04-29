@@ -1,5 +1,7 @@
 pipeline {
-    agent 'builder'
+    agent {
+        label 'builder'
+    }
     
     // tools {
     //     maven 'Maven'
