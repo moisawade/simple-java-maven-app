@@ -2,6 +2,10 @@ pipeline {
     agent {
         label 'builder'
     }
+
+    environment {
+        sonarqube-token = credentials('sonarqube-token')
+    }
     
     tools {
         maven 'Maven'
