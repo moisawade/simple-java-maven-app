@@ -28,6 +28,7 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
+                    sh 'mvn clean verify sonar:sonar -Dsonar.token=sonarqube-token'
                     sh 'mvn sonar:sonar -Dsonar.projectKey=simple-java-maven-app -Dsonar.projectName="simple-java-maven-app"'
                 }
             }
