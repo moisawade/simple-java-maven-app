@@ -4,7 +4,7 @@ pipeline {
     }
 
     environment {
-        sonarqube_token = credentials('sonarqube-token')
+        //sonarqube_token = credentials('sonarqube-token')
         MAVEN_CREDENTIALS = credentials('nexus-credentials-id')
     }
     
