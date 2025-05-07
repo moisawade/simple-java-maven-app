@@ -34,7 +34,7 @@ pipeline {
         
         stage('Build & Deploy') {
             steps {
-                sh 'mvn clean deploy -DaltDeploymentRepository=releases::default::http://10.200.0.13:8081/repository/maven-releases/'
+                sh 'mvn clean deploy -DaltDeploymentRepository=releases::default::http://54.155.163.70:8081/repository/maven-releases/'
             }
         }
     }
