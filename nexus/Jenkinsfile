@@ -3,10 +3,10 @@ pipeline {
         label 'builder'
     }
 
-    environment {
-        //sonarqube_token = credentials('sonarqube-token')
-        MAVEN_CREDENTIALS = credentials('nexus-creds-id')
-    }
+    // environment {
+    //     //sonarqube_token = credentials('sonarqube-token')
+    //     MAVEN_CREDENTIALS = credentials('nexus-creds-id')
+    // }
     
     tools {
         maven 'Maven'
@@ -18,7 +18,7 @@ pipeline {
                 deleteDir() // Deletes everything in the current workspace
             }
         }
-        
+
         stage('Checkout') {
             steps {
                 checkout scm
