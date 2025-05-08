@@ -3,14 +3,13 @@ pipeline {
         label 'builder'
     }
 
-    // environment {
-    //     //sonarqube_token = credentials('sonarqube-token')
-    //     MAVEN_CREDENTIALS = credentials('nexus-creds-id')
-    // }
+    environment {
+        //sonarqube_token = credentials('sonarqube-token')
+        MAVEN_CREDENTIALS = credentials('nexus-creds-id')
+    }
     
     tools {
         maven 'Maven'
-    //    jdk 'JDK11'
     }
     
     stages {
