@@ -41,11 +41,18 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                script {
-                    docker.build("${IMAGE_NAME}:${IMAGE_TAG}")
-                }
+                    sh 'docker build -t mycompany/simple-java-maven-app:latest .'
             }
         }
+
+
+        // stage('Build Docker Image') {
+        //     steps {
+        //         script {
+        //             docker.build("${IMAGE_NAME}:${IMAGE_TAG}")
+        //         }
+        //     }
+        // }
         
         // The good things at the end
         // stage('Quality Gate') {
