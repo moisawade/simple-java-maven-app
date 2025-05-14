@@ -63,6 +63,12 @@ pipeline {
             }
         }
 
+        stage('Deploy Docker Image') {
+            steps {
+                    sh 'docker run ${IMAGE_NAME}:${IMAGE_TAG} -p 8888:8080'
+            }
+        }
+
 
         // stage('Build Docker Image') {
         //     steps {
