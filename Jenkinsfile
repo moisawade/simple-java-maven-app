@@ -4,15 +4,10 @@ pipeline {
     }
 
     environment {
-        sonarqube_token = credentials('sonar-secret-id')
-        IMAGE_NAME = "dockermoisa/simple-java-maven-app"
+        IMAGE_NAME = "dockermoisa/challengewebapp"
         IMAGE_TAG = "latest"
     }
     
-    tools {
-        maven 'Maven'
-    //    jdk 'JDK11'
-    }
     
     stages {
         stage('Checkout') {
@@ -21,25 +16,6 @@ pipeline {
             }
         }
         
-        stage('Build') {
-            steps {
-                sh 'mvn clean package -DskipTests'
-            }
-        }
-        
-        stage('Test') {
-            steps {
-                sh 'mvn test'
-            }
-        }
-        
-        stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv('SonarQube') {
-                    sh 'mvn sonar:sonar -Dsonar.projectKey=simple-java-maven-app -Dsonar.projectName="simple-java-maven-app"'
-                }
-            }
-        }
 
         stage('Build Docker Image') {
             steps {
@@ -56,7 +32,9 @@ pipeline {
                 aquasec/trivy image \
                 --format template \
                 --template "@/contrib/html.tpl" \
-                 -o /root/reports/trivy-report.html \
+                --exit-code 1 \
+                --severity HIGH,CRITICAL \
+                -o /root/reports/trivy-report.html \
                 ${IMAGE_NAME}:${IMAGE_TAG}
                 '''
             }
@@ -76,18 +54,6 @@ pipeline {
             }
         }
 
-
-        // stage('Scan Image with Trivy (Docker)') {
-        //     steps {
-        //         sh '''
-        //             echo " Running Trivy scan via Docker..."
-        //             docker run --rm \
-        //                 -v /var/run/docker.sock:/var/run/docker.sock \
-        //                 aquasec/trivy image --exit-code 0 --severity HIGH,CRITICAL ${IMAGE_NAME}:${IMAGE_TAG}
-        //         '''
-        //     }
-        // }
-
         //  Optional: Push Docker image to a registry
         stage('Push Docker Image') {
             steps {
@@ -104,29 +70,11 @@ pipeline {
             }
         }
 
-        // stage('Deploy Docker Image') {
-        //     steps {
-        //             sh 'docker run ${IMAGE_NAME}:${IMAGE_TAG} -p 8888:8080'
-        //     }
-        // }
-
-
-        // stage('Build Docker Image') {
-        //     steps {
-        //         script {
-        //             docker.build("${IMAGE_NAME}:${IMAGE_TAG}")
-        //         }
-        //     }
-        // }
-        
-        // The good things at the end
-        // stage('Quality Gate') {
-        //     steps {
-        //         timeout(time: 1, unit: 'HOURS') {
-        //             waitForQualityGate abortPipeline: true
-        //         }
-        //     }
-        // }
+        stage('Deploy Docker Image') {
+            steps {
+                sh 'docker run ${IMAGE_NAME}:${IMAGE_TAG} -p 8888:8080'
+            }
+        }
 
     }
 }
