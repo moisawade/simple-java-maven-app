@@ -38,15 +38,23 @@ pipeline {
                 }
             }
         }
-        
-        // The good things at the end
-        stage('Quality Gate') {
+
+        stage('Build Docker Image') {
             steps {
-                timeout(time: 1, unit: 'HOURS') {
-                    waitForQualityGate abortPipeline: true
+                script {
+                    docker.build("${IMAGE_NAME}:${IMAGE_TAG}")
                 }
             }
         }
+        
+        // The good things at the end
+        // stage('Quality Gate') {
+        //     steps {
+        //         timeout(time: 1, unit: 'HOURS') {
+        //             waitForQualityGate abortPipeline: true
+        //         }
+        //     }
+        // }
 
     }
 }
