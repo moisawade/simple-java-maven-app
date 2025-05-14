@@ -1,44 +1,3 @@
-// pipeline {
-//     // agent any
-//      agent {
-//         label 'buildertwo'
-//     }
-//     options {
-//         skipStagesAfterUnstable()
-//     }
-    
-//      tools {
-//         maven 'Maven'
-//     }
-
-//     stages {
-//         stage('Build') {
-//             steps {
-//                 sh 'mvn -B -DskipTests clean package'
-//             }
-//         }
-//         stage('Test') {
-//             steps {
-//                 sh 'mvn test'
-//             }
-//             post {
-//                 always {
-//                     junit 'target/surefire-reports/*.xml'
-//                 }
-//             }
-//         }
-//         stage('Deliver') { 
-//             steps {
-//                 sh './jenkins/scripts/deliver.sh' 
-//             }
-//         }
-//     }
-// }
-
-
-
-
-
 pipeline {
     agent {
         label 'buildertwo'
@@ -46,6 +5,8 @@ pipeline {
 
     environment {
         sonarqube_token = credentials('sonar-secrets-id')
+        IMAGE_NAME = "medlamin13956814/simple-java-maven-app"
+        IMAGE_TAG = "latest"
     }
     
     tools {
@@ -79,18 +40,50 @@ pipeline {
                 }
             }
         }
+
+        stage('Build Docker Image') {
+            steps {
+                    sh 'docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .'
+            }
+        }
+
+        //  Optional: Push Docker image to a registry
+        stage('Push Docker Image') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'docker-image-id',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    sh '''
+                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                        docker push ${IMAGE_NAME}:${IMAGE_TAG}
+                    '''
+                }
+            }
+        }
+
+        stage('Deploy Docker Image') {
+            steps {
+                    sh 'docker run ${IMAGE_NAME}:${IMAGE_TAG} -p 8888:8080'
+            }
+        }
+
+
+        // stage('Build Docker Image') {
+        //     steps {
+        //         script {
+        //             docker.build("${IMAGE_NAME}:${IMAGE_TAG}")
+        //         }
+        //     }
+        // }
         
-        //The good things at the end
+        // The good things at the end
         // stage('Quality Gate') {
         //     steps {
         //         timeout(time: 1, unit: 'HOURS') {
         //             waitForQualityGate abortPipeline: true
         //         }
-        //     }
-        // }
-        // post {
-        //     always {
-        //         cleanWs()
         //     }
         // }
 
