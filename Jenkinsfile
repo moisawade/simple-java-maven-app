@@ -5,7 +5,7 @@ pipeline {
 
     environment {
         sonarqube_token = credentials('sonar-secret-id')
-        IMAGE_NAME = "dockermoisa/labisi2025"
+        IMAGE_NAME = "dockermoisa/simple-java-maven-app"
         IMAGE_TAG = "latest"
     }
     
