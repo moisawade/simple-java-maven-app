@@ -65,6 +65,9 @@ pipeline {
         stage('Publish Trivy Report') {
             steps {
                 publishHTML(target: [
+                allowMissing: true,
+                alwaysLinkToLastBuild: false,
+                keepAll: true,
                 reportDir: '.',
                 reportFiles: 'trivy-report.html',
                 reportName: 'Trivy Security Report',
