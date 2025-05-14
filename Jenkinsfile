@@ -47,6 +47,17 @@ pipeline {
             }
         }
 
+        stage('Scan Image with Trivy (Docker)') {
+            steps {
+                sh '''
+                    echo " Running Trivy scan via Docker..."
+                    docker run --rm \
+                        -v /var/run/docker.sock:/var/run/docker.sock \
+                        aquasec/trivy image --exit-code 0 --severity HIGH,CRITICAL ${IMAGE_NAME}:${IMAGE_TAG}
+                '''
+            }
+        }
+
         //  Optional: Push Docker image to a registry
         stage('Push Docker Image') {
             steps {
