@@ -5,6 +5,8 @@ pipeline {
 
     environment {
         sonarqube_token = credentials('sonar-secret-id')
+        IMAGE_NAME = "dockermoisa/labisi2025"
+        IMAGE_TAG = "latest"
     }
     
     tools {
@@ -41,7 +43,7 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                    sh 'docker build -t dockermoisa/labisi2025:latest .'
+                    sh 'docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .'
             }
         }
 
