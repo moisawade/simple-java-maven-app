@@ -1,36 +1,98 @@
+// pipeline {
+//     // agent any
+//      agent {
+//         label 'buildertwo'
+//     }
+//     options {
+//         skipStagesAfterUnstable()
+//     }
+    
+//      tools {
+//         maven 'Maven'
+//     }
+
+//     stages {
+//         stage('Build') {
+//             steps {
+//                 sh 'mvn -B -DskipTests clean package'
+//             }
+//         }
+//         stage('Test') {
+//             steps {
+//                 sh 'mvn test'
+//             }
+//             post {
+//                 always {
+//                     junit 'target/surefire-reports/*.xml'
+//                 }
+//             }
+//         }
+//         stage('Deliver') { 
+//             steps {
+//                 sh './jenkins/scripts/deliver.sh' 
+//             }
+//         }
+//     }
+// }
+
+
+
+
+
 pipeline {
-    // agent any
-     agent {
+    agent {
         label 'buildertwo'
     }
-    options {
-        skipStagesAfterUnstable()
+
+    environment {
+        sonarqube_token = credentials('sonar-secrets-id')
     }
     
-     tools {
+    tools {
         maven 'Maven'
+    //    jdk 'JDK11'
     }
-
+    
     stages {
-        stage('Build') {
+        stage('Checkout') {
             steps {
-                sh 'mvn -B -DskipTests clean package'
+                checkout scm
             }
         }
+        
+        stage('Build') {
+            steps {
+                sh 'mvn clean package -DskipTests'
+            }
+        }
+        
         stage('Test') {
             steps {
                 sh 'mvn test'
             }
-            post {
-                always {
-                    junit 'target/surefire-reports/*.xml'
+        }
+        
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    sh 'mvn sonar:sonar -Dsonar.projectKey=simple-java-maven-app -Dsonar.projectName="simple-java-maven-app"'
                 }
             }
         }
-        stage('Deliver') { 
-            steps {
-                sh './jenkins/scripts/deliver.sh' 
+        
+        //The good things at the end
+        // stage('Quality Gate') {
+        //     steps {
+        //         timeout(time: 1, unit: 'HOURS') {
+        //             waitForQualityGate abortPipeline: true
+        //         }
+        //     }
+        // }
+        post {
+            always {
+                cleanWs()
             }
         }
+
     }
 }
