@@ -47,33 +47,32 @@ pipeline {
             }
         }
 
-        stage('Security Scan with Trivy') {
+        stage('Trivy Security Scan') {
             steps {
-                    sh '''
-                    echo " Running Trivy scan with HTML report..."
-                    docker run --rm \
-                    -v /var/run/docker.sock:/var/run/docker.sock \
-                    -v $PWD:/root/reports \
-                    aquasec/trivy image \
-                    --format html \
-                    -o /root/reports/trivy-report.html \
-                    $IMAGE_NAME:$IMAGE_TAG
-                    '''
+                sh '''
+                docker run --rm \
+                -v /var/run/docker.sock:/var/run/docker.sock \
+                -v $PWD:/root/reports \
+                aquasec/trivy image \
+                --format template \
+                --template "@/contrib/html.tpl" \
+                 -o /root/reports/trivy-report.html \
+                ${IMAGE_NAME}:${IMAGE_TAG}
+                '''
             }
         }
 
         stage('Publish Trivy Report') {
             steps {
-                    publishHTML(target: [
-                    reportDir: '.',
-                    reportFiles: 'trivy-report.html',
-                    reportName: 'Trivy Security Report',
-                    keepAll: true,
-                    alwaysLinkToLastBuild: true,
-                    allowMissing: false
+                publishHTML(target: [
+                reportDir: '.',
+                reportFiles: 'trivy-report.html',
+                reportName: 'Trivy Security Report',
+                alwaysLinkToLastBuild: true
                 ])
             }
         }
+
 
         // stage('Scan Image with Trivy (Docker)') {
         //     steps {
