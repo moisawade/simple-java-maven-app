@@ -53,8 +53,7 @@ pipeline {
                     echo " Running Trivy scan via Docker..."
                     docker run --rm \
                         -v /var/run/docker.sock:/var/run/docker.sock \
-                        aquasec/trivy image --format html -o /root/reports/trivy-report.html \ 
-                        --exit-code 0 --severity HIGH,CRITICAL ${IMAGE_NAME}:${IMAGE_TAG}
+                        aquasec/trivy image --format html --exit-code 0 --severity HIGH,CRITICAL -o /root/reports/trivy-report.html ${IMAGE_NAME}:${IMAGE_TAG} 
                 '''
             }
         }
