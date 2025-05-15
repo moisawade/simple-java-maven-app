@@ -65,7 +65,7 @@ pipeline {
 
         stage('Deploy Docker Image') {
             steps {
-                    sh 'sudo docker run -d -p 9006:80 ${IMAGE_NAME}:${IMAGE_TAG}'
+                    sh 'sudo docker run -d -p 9010:80 ${IMAGE_NAME}:${IMAGE_TAG}'
                     
             }
         }
