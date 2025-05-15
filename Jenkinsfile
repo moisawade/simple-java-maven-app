@@ -77,7 +77,7 @@ pipeline {
                     # Alternatively, remove docker containers using port 9010
                     CONTAINER=$(sudo docker ps -q --filter "publish=9010")
                     if [ -n "$CONTAINER" ]; then
-                    echo "Docker container using port 9010 found, stopping it..."
+                    echo "Docker container using port 9010 found, stopping itt..."
                     sudo docker rm -f $CONTAINER
                     fi
 
