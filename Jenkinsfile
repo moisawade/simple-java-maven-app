@@ -1,36 +1,91 @@
 pipeline {
-    // agent any
-     agent {
+    agent {
         label 'buildertwo'
     }
-    options {
-        skipStagesAfterUnstable()
+
+    environment {
+        sonarqube_token = credentials('sonar-secrets-id')
+        IMAGE_NAME = "medlamin13956814/challenges"
+        IMAGE_TAG = "latest"
     }
     
-     tools {
-        maven 'Maven'
-    }
-
+    // tools {
+    //     maven 'Maven'
+    // //    jdk 'JDK11'
+    // }
+    
     stages {
-        stage('Build') {
+        stage('Checkout') {
             steps {
-                sh 'mvn -B -DskipTests clean package'
+                checkout scm
             }
         }
-        stage('Test') {
+        
+        // stage('Build') {
+        //     steps {
+        //         sh 'mvn clean package -DskipTests'
+        //     }
+        // }
+        
+        // stage('Test') {
+        //     steps {
+        //         sh 'mvn test'
+        //     }
+        // }
+        
+        // stage('SonarQube Analysis') {
+        //     steps {
+        //         withSonarQubeEnv('SonarQube') {
+        //             sh 'mvn sonar:sonar -Dsonar.projectKey=simple-java-maven-app -Dsonar.projectName="simple-java-maven-app"'
+        //         }
+        //     }
+        // }
+
+        stage('Build Docker Image') {
             steps {
-                sh 'mvn test'
+                    sh 'sudo docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .'
             }
-            post {
-                always {
-                    junit 'target/surefire-reports/*.xml'
+        }
+
+        //  Optional: Push Docker image to a registry
+        stage('Push Docker Image') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'docker-image-id',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    sh '''
+                        echo "$DOCKER_PASS" | sudo docker login -u "$DOCKER_USER" --password-stdin
+                        sudo docker push ${IMAGE_NAME}:${IMAGE_TAG}
+                    '''
                 }
             }
         }
-        stage('Deliver') { 
-            steps {
-                sh './jenkins/scripts/deliver.sh' 
-            }
-        }
+
+        // stage('Deploy Docker Image') {
+        //     steps {
+        //             sh 'sudo docker run ${IMAGE_NAME}:${IMAGE_TAG} -p 8888:8080'
+        //     }
+        // }
+
+
+        // stage('Build Docker Image') {
+        //     steps {
+        //         script {
+        //             docker.build("${IMAGE_NAME}:${IMAGE_TAG}")
+        //         }
+        //     }
+        // }
+        
+        // The good things at the end
+        // stage('Quality Gate') {
+        //     steps {
+        //         timeout(time: 1, unit: 'HOURS') {
+        //             waitForQualityGate abortPipeline: true
+        //         }
+        //     }
+        // }
+
     }
 }
