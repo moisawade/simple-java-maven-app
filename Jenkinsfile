@@ -66,8 +66,24 @@ pipeline {
         stage('Deploy Docker Image') {
             steps {
                     // sh 'sudo docker run -d --rm -p 9010:80 ${IMAGE_NAME}:${IMAGE_TAG}'
-                   sh 'sudo docker stop ${IMAGE_NAME}:${IMAGE_TAG} || true && docker rm ${IMAGE_NAME}:${IMAGE_TAG} || true docker run -d -p 9010:80 --name ${IMAGE_NAME}:${IMAGE_TAG} ${IMAGE_NAME}:${IMAGE_TAG}'
-                    
+                   //sh 'sudo docker stop ${IMAGE_NAME}:${IMAGE_TAG} || true && docker rm ${IMAGE_NAME}:${IMAGE_TAG} || true docker run -d -p 9010:80 --name ${IMAGE_NAME}:${IMAGE_TAG} ${IMAGE_NAME}:${IMAGE_TAG}'
+                    sh '''
+                    PORT_IN_USE=$(sudo lsof -t -i:9010)
+                    if [ -n "$PORT_IN_USE" ]; then
+                    echo "Port 9010 in use, stopping process..."
+                    sudo kill -9 $PORT_IN_USE || true
+                    fi
+
+                    # Alternatively, remove docker containers using port 9010
+                    CONTAINER=$(sudo docker ps -q --filter "publish=9010")
+                    if [ -n "$CONTAINER" ]; then
+                    echo "Docker container using port 9010 found, stopping it..."
+                    sudo docker rm -f $CONTAINER
+                    fi
+
+                    sudo docker run -d -p 9010:80 ${IMAGE_NAME}:${IMAGE_TAG}
+                    '''
+
             }
         }
 
