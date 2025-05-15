@@ -5,7 +5,7 @@ pipeline {
 
     environment {
         sonarqube_token = credentials('sonar-secrets-id')
-        IMAGE_NAME = "medlamin13956814/exercise"
+        IMAGE_NAME = "medlamin13956814/exercise_with_deploy"
         IMAGE_TAG = "latest"
     }
     
@@ -65,7 +65,8 @@ pipeline {
 
         stage('Deploy Docker Image') {
             steps {
-                    sh 'sudo docker run ${IMAGE_NAME}:${IMAGE_TAG} -p 9006:80'
+                    sh 'sudo docker run -d -p 9006:80 ${IMAGE_NAME}:${IMAGE_TAG}'
+                    
             }
         }
 
