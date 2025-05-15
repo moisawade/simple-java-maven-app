@@ -89,7 +89,7 @@ pipeline {
                 --format template \
                 --template "@/contrib/html.tpl" \
                 --exit-code 1 \
-                --severity CRITICAL \
+                --severity MEDIUM,HIGH,CRITICAL \
                  -o /root/reports/trivy-report.html \
                 ${IMAGE_NAME}:${IMAGE_TAG}
                 '''
