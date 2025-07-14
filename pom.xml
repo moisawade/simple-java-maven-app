@@ -17,7 +17,7 @@
   </dependencies>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <sonar.host.url>http://10.200.0.182:9000</sonar.host.url>
+    <sonar.host.url>http://172.25.161.206:9000</sonar.host.url>
     <sonar.login>${env.sonarqube_token}</sonar.login>
     <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
     <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
